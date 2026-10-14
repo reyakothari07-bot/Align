@@ -1,68 +1,52 @@
-import Image from "next/image";
+import { redirect } from "next/navigation";
+import { getViewer } from "@/lib/session";
+import { ButtonLink } from "@/components/ui";
+import { Logo } from "@/components/logo";
 
-export default function Home() {
+export default async function Landing() {
+  const { user, profile } = await getViewer();
+  if (user) redirect(profile?.role ? "/home" : "/onboarding");
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="flex min-h-full flex-1 flex-col bg-gradient-to-b from-brand-700 via-brand-600 to-brand-500 text-white">
+      <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-5">
+        <Logo light />
+        <ButtonLink href="/login" variant="secondary" size="sm" className="!ring-0">
+          Sign in
+        </ButtonLink>
+      </header>
+
+      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 pb-12">
+        <section className="py-10 md:py-20">
+          <p className="mb-4 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold tracking-wide">
+            For creators with 1K–12K followers
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+          <h1 className="max-w-2xl text-4xl font-extrabold leading-[1.1] tracking-tight md:text-6xl">
+            Brands and creators, perfectly aligned.
+          </h1>
+          <p className="mt-5 max-w-xl text-lg text-brand-100">
+            Find paid and barter collaborations, agree terms, chat and track every deal in one place. No DMs, no middlemen.
+          </p>
+          <div className="mt-8 max-w-xs">
+            <ButtonLink href="/login" variant="secondary" className="!ring-0 text-brand-700">
+              Get started
+            </ButtonLink>
+          </div>
+        </section>
+
+        <section className="grid gap-4 md:grid-cols-3">
+          {[
+            ["1", "Build your profile", "Creators add their best work. Brands share what they're looking for."],
+            ["2", "Match and agree", "Apply to campaigns or send a request. Accept, decline or counter once."],
+            ["3", "Deliver and rate", "Track the deal step by step in the Deal Card, then rate each other."],
+          ].map(([n, title, body]) => (
+            <div key={n} className="rounded-3xl bg-white/10 p-6 ring-1 ring-inset ring-white/15">
+              <span className="flex size-9 items-center justify-center rounded-full bg-white text-sm font-bold text-brand-700">{n}</span>
+              <h2 className="mt-4 text-lg font-bold">{title}</h2>
+              <p className="mt-1 text-sm text-brand-100">{body}</p>
+            </div>
+          ))}
+        </section>
       </main>
     </div>
   );

@@ -15,6 +15,7 @@
 
 # next.js
 /.next/
+/.next
 /out/
 
 # production
@@ -32,6 +33,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -39,3 +41,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# supabase
+supabase/.branches
+supabase/.temp
+
+# iCloud: keep dependencies and build output local (see README)
+/node_modules.nosync
+/.next.nosync
