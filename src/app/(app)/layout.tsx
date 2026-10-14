@@ -8,15 +8,12 @@ import { Logo } from "@/components/logo";
 
 export default async function AppLayout({ children }: LayoutProps<"/">) {
   const { supabase, id, role, suspended } = await requireViewer();
-  if (role === "brand") {
-    const { data: brand } = await supabase.from("brand_profiles").select("terms_version").eq("user_id", id).maybeSingle();
-    if (brand?.terms_version !== BRAND_TERMS_VERSION) redirect("/terms/accept");
-  }
-  const { count } = await supabase
-    .from("notifications")
-    .select("id", { count: "exact", head: true })
-    .eq("user_id", id)
-    .is("read_at", null);
+  // Independent lookups run together rather than one after another.
+  const [{ count }, terms] = await Promise.all([
+    supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", id).is("read_at", null),
+    role === "brand" ? supabase.from("brand_profiles").select("terms_version").eq("user_id", id).maybeSingle() : null,
+  ]);
+  if (terms && terms.data?.terms_version !== BRAND_TERMS_VERSION) redirect("/terms/accept");
 
   return (
     <div className="flex min-h-full flex-1 flex-col">
