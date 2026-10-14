@@ -105,7 +105,7 @@ Then open http://localhost:3000.
 
 | Command | What it proves |
 |---|---|
-| `npm run test:db` | 69 pgTAP checks run directly in Postgres and roll back afterwards, so no data changes. Covered: contact details unreadable by others, chat filter (phone with spaces, dashes or `+91`, email, `wa.me`, `t.me`, WhatsApp, Telegram), violation counter and suspension at 3, every invalid deal transition rejected, 7-day auto-complete, under-18 and outside-1K–12K signups blocked, `ig_handle` not editable. Needs the seed. |
+| `npm run test:db` | 76 pgTAP checks run directly in Postgres and roll back afterwards, so no data changes. Covered: contact details unreadable by others, chat filter (phone with spaces, dashes or `+91`, email, `wa.me`, `t.me`, WhatsApp, Telegram), violation counter and suspension at 3, every invalid deal transition rejected, 7-day auto-complete, under-18 and outside-1K–12K signups blocked, `ig_handle` not editable. Needs the seed. |
 | `npm run test:privacy` | Signs in through the real API as a creator and as a brand, reads every table and view the site can reach, and fails if any response contains another user's phone or email. Needs the seed and the test phone numbers from step 3. |
 | `npm run typecheck` / `npm run lint` / `npm run build` | Static checks. |
 
@@ -141,12 +141,20 @@ Admins sign in at `/login` like everyone else and land on **`/admin`**:
 - **Users:** search, warnings, suspend or lift a suspension.
 - **Follower checks:** self-reported follower counts to spot-check against Instagram.
 
-Admin accounts can only be created from the database:
+Admins are managed from the database. The easiest way is the **admin email list**: anyone signing in with a listed email becomes an admin automatically, including on their first Google sign-in.
 
 ```sql
-update public.users set is_admin = true
- where id = (select id from auth.users where phone = '91XXXXXXXXXX');
+insert into public.admin_emails (email) values ('someone@example.com');
 ```
+
+To make an existing account admin directly, or to remove admin rights:
+
+```sql
+update public.users set is_admin = true  where id = (select id from auth.users where email = 'someone@example.com');
+update public.users set is_admin = false where id = (select id from auth.users where email = 'someone@example.com');
+```
+
+Current admins: `reyakothari07@gmail.com`, `aaryaman1112@gmail.com` (plus the demo phone account below).
 
 The demo admin is the test number `9100000009` (code `123456`). Remove its admin flag, or delete it, before launch.
 

@@ -1,7 +1,7 @@
 -- Run with: npm run test:db   (needs the seed loaded; everything rolls back)
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(73);
+select plan(76);
 
 
 create or replace function pg_temp.act_as(p_user uuid) returns void language plpgsql as $$
@@ -281,6 +281,19 @@ select is((select status::text || '/' || (resolution_note is not null)::text fro
   'completed/true', 'the resolved deal is completed with the admin''s note saved');
 select is((select count(*)::int from notifications where deal_id = (select overdue_deal from fx) and type = 'dispute_resolved'), 2,
   'both sides are told how the dispute was resolved');
+
+-- Admin email allowlist: listed emails become admins on first sign-in; others don't.
+select pg_temp.act_as_admin();
+insert into admin_emails (email) values ('new.admin.test@example.com');
+insert into auth.users (instance_id, id, aud, role, email)
+values ('00000000-0000-0000-0000-000000000000', 'aaaaaaaa-0000-4000-8000-000000000003', 'authenticated', 'authenticated', 'New.Admin.Test@example.com'),
+       ('00000000-0000-0000-0000-000000000000', 'aaaaaaaa-0000-4000-8000-000000000004', 'authenticated', 'authenticated', 'just.a.user@example.com');
+select is((select is_admin from users where id = 'aaaaaaaa-0000-4000-8000-000000000003'), true,
+  'an email on the admin list becomes admin on first sign-in (case-insensitive)');
+select is((select is_admin from users where id = 'aaaaaaaa-0000-4000-8000-000000000004'), false,
+  'any other email does not become admin');
+select pg_temp.act_as('aaaaaaaa-0000-4000-8000-000000000004');
+select throws_ok('select * from admin_emails', '42501', null, 'users cannot read the admin list');
 
 select * from finish();
 rollback;
