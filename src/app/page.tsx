@@ -9,16 +9,16 @@ export default async function Landing() {
 
   return (
     <div className="flex min-h-full flex-1 flex-col bg-gradient-to-b from-brand-700 via-brand-600 to-brand-500 text-white">
-      <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-5">
-        <Logo light />
+      <header className="mx-auto flex w-full max-w-5xl items-center justify-end px-4 py-5">
         <ButtonLink href="/login" variant="secondary" size="sm" className="!ring-0">
           Sign in
         </ButtonLink>
       </header>
 
       <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 pb-12">
-        <section className="py-10 md:py-20">
-          <p className="mb-4 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold tracking-wide">
+        <section className="flex flex-col items-center py-10 text-center md:py-16">
+          <Logo light size="lg" tagline />
+          <p className="mb-4 mt-10 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold tracking-wide">
             For creators with 1K–12K followers
           </p>
           <h1 className="max-w-2xl text-4xl font-extrabold leading-[1.1] tracking-tight md:text-6xl">
@@ -27,7 +27,7 @@ export default async function Landing() {
           <p className="mt-5 max-w-xl text-lg text-brand-100">
             Find paid and barter collaborations, agree terms, chat and track every deal in one place. No DMs, no middlemen.
           </p>
-          <div className="mt-8 max-w-xs">
+          <div className="mt-8 w-full max-w-xs">
             <ButtonLink href="/login" variant="secondary" className="!ring-0 text-brand-700">
               Get started
             </ButtonLink>

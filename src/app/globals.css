@@ -2,6 +2,14 @@
 
 /* Plus Jakarta Sans, self-hosted (SIL OFL, see public/fonts) so builds never depend on Google Fonts.
    latin-ext is included for the ₹ sign. */
+/* Comfortaa (SIL OFL): used only for the "align" wordmark in the logo. */
+@font-face {
+  font-family: "Comfortaa";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 300 700;
+  src: url("/fonts/comfortaa-latin-wght-normal.woff2") format("woff2-variations");
+}
 @font-face {
   font-family: "Plus Jakarta Sans";
   font-style: normal;

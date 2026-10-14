@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="30 72 650 650">
+  <defs>
+    <linearGradient id="r-light" gradientUnits="userSpaceOnUse" x1="330" y1="182" x2="560" y2="620">
+      <stop offset="0" stop-color="#B79BFF"/><stop offset="0.5" stop-color="#8B5CF6"/><stop offset="1" stop-color="#5B21B6"/>
+    </linearGradient>
+    <linearGradient id="b-light" gradientUnits="userSpaceOnUse" x1="380" y1="400" x2="60" y2="612">
+      <stop offset="0" stop-color="#C9B4FF"/><stop offset="0.55" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6D28D9"/>
+    </linearGradient>
+    <linearGradient id="f-light" gradientUnits="userSpaceOnUse" x1="470" y1="330" x2="640" y2="610">
+      <stop offset="0" stop-color="#3B0F86" stop-opacity="0"/><stop offset="1" stop-color="#3B0F86" stop-opacity="0.75"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#r-light)" d="M40 606 C110 490 200 345 272 262 C310 212 360 184 425 182 Q458 182 470 210 L666 590 Q672 612 650 607 Q612 600 588 578 L455 345 C425 285 375 250 330 250 C295 252 270 275 248 305 C190 385 120 495 64 608 Q52 614 40 606 Z"/>
+  <path fill="url(#f-light)" d="M455 345 L588 578 Q612 600 650 607 Q596 548 556 455 Q520 375 478 330 Z"/>
+  <path fill="url(#b-light)" d="M42 608 C112 500 232 420 382 402 C322 428 262 472 214 528 C182 566 154 596 132 612 Q86 620 42 608 Z"/>
+</svg>
