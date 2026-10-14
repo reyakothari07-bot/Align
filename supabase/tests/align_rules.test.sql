@@ -1,7 +1,7 @@
 -- Run with: npm run test:db   (needs the seed loaded; everything rolls back)
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(69);
+select plan(73);
 
 
 create or replace function pg_temp.act_as(p_user uuid) returns void language plpgsql as $$
@@ -217,6 +217,20 @@ select throws_ok($$insert into campaigns (brand_id, title, content_type, comp_ty
 select lives_ok($$insert into campaigns (brand_id, title, content_type, content_other, comp_type, budget_bucket, deadline, niche, slots)
                   values (auth.uid(), 'Podcast feature', 'Other', 'Podcast clip', 'paid', '₹2K–3K', current_date + 7, 'Beauty', 1)$$,
   'an "Other" campaign with a description is accepted');
+
+-- Google sign-ups have no phone from login, so profile setup must collect one.
+select pg_temp.act_as_admin();
+insert into auth.users (instance_id, id, aud, role, email, raw_user_meta_data)
+values ('00000000-0000-0000-0000-000000000000', 'aaaaaaaa-0000-4000-8000-000000000002', 'authenticated', 'authenticated',
+        'google.user@example.com', '{"full_name": "Google User"}');
+select pg_temp.act_as('aaaaaaaa-0000-4000-8000-000000000002');
+select throws_ok($$select complete_brand_onboarding('Google User', null, true, 'G Brand', 'Beauty', 'g.brand.test', 100, 'Mumbai', 18, 30, null, true)$$,
+  'P0001', 'Please add your mobile number. It stays private.', 'a Google sign-up without a mobile number cannot finish setup');
+select throws_ok($$select complete_brand_onboarding('Google User', null, true, 'G Brand', 'Beauty', 'g.brand.test', 100, 'Mumbai', 18, 30, null, true, '12345 67890')$$,
+  'P0001', 'Please enter a valid 10-digit Indian mobile number.', 'an invalid mobile number is rejected');
+select lives_ok($$select complete_brand_onboarding('Google User', null, true, 'G Brand', 'Beauty', 'g.brand.test', 100, 'Mumbai', 18, 30, null, true, '+91 98765-43210')$$,
+  'a Google sign-up with a valid mobile number can finish setup');
+select is((select phone from user_private where user_id = auth.uid()), '919876543210', 'the mobile number is stored privately in a standard format');
 
 -- =====================================================================
 -- 6. Brand Terms: brands must accept the terms and agree to pay on every commitment

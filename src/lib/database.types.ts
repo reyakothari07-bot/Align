@@ -1026,6 +1026,7 @@ export type Database = {
           p_location: string
           p_name: string
           p_accept_terms: boolean
+          p_phone?: string
         }
         Returns: undefined
       }
@@ -1043,6 +1044,7 @@ export type Database = {
           p_other_content: string
           p_portfolio: string[]
           p_rates: Json
+          p_phone?: string
         }
         Returns: undefined
       }
@@ -1053,6 +1055,7 @@ export type Database = {
       is_active: { Args: never; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
       normalize_handle: { Args: { p_handle: string }; Returns: string }
+      normalize_in_mobile: { Args: { p: string }; Returns: string }
       notify: {
         Args: {
           p_body: string

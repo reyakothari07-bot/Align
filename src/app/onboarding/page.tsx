@@ -9,8 +9,11 @@ export default async function OnboardingPage() {
   const { data: isAdmin } = await supabase.rpc("is_admin");
   if (isAdmin) redirect("/admin");
 
+  const { data: priv } = await supabase.from("user_private").select("phone").eq("user_id", user.id).maybeSingle();
+
   return (
     <OnboardingWizard
+      hasPhone={Boolean(priv?.phone)}
       userId={user.id}
       defaultName={profile?.name ?? ""}
       defaultEmail={user.email ?? ""}

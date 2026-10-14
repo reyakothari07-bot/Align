@@ -7,6 +7,7 @@ import { Alert, Button } from "@/components/ui";
 import { Chips, Field, Input, Select, Textarea } from "@/components/form";
 import { PortfolioEditor, PORTFOLIO_MIN } from "@/components/portfolio-editor";
 import { OtherContentInput, RatesEditor, pickRates } from "@/components/rates";
+import { MobileInput, cleanMobile } from "@/components/mobile-input";
 import type { Database } from "@/lib/database.types";
 import {
   BRAND_LOCATIONS,
@@ -30,6 +31,7 @@ export function EditProfileForm({
   role,
   name: initialName,
   email: initialEmail,
+  phone: initialPhone,
   creator,
   brand,
 }: {
@@ -37,12 +39,14 @@ export function EditProfileForm({
   role: Role;
   name: string;
   email: string;
+  phone: string;
   creator: Creator | null;
   brand: Brand | null;
 }) {
   const router = useRouter();
   const [name, setName] = useState(initialName);
   const [email, setEmail] = useState(initialEmail);
+  const [mobile, setMobile] = useState(initialPhone);
   const [followers, setFollowers] = useState(String(creator?.followers ?? brand?.followers ?? ""));
   // creator
   const [niche, setNiche] = useState(creator?.niche ?? null);
@@ -67,6 +71,8 @@ export function EditProfileForm({
     e.preventDefault();
     setError(null);
     if (!name.trim()) return setError("Please add your name.");
+    const cleanPhone = cleanMobile(mobile);
+    if (!cleanPhone) return setError("Please enter a valid 10-digit mobile number.");
     if (role === "creator") {
       const f = Number(followers);
       if (f < CREATOR_MIN_FOLLOWERS || f > CREATOR_MAX_FOLLOWERS) return setError("Align is for creators with 1K–12K followers.");
@@ -80,7 +86,7 @@ export function EditProfileForm({
     const supabase = createClient();
     const results = await Promise.all([
       supabase.from("users").update({ name: name.trim() }).eq("id", userId),
-      supabase.from("user_private").update({ email: email.trim() || null }).eq("user_id", userId),
+      supabase.from("user_private").update({ email: email.trim() || null, phone: "91" + cleanPhone }).eq("user_id", userId),
       role === "creator"
         ? supabase
             .from("creator_profiles")
@@ -127,6 +133,7 @@ export function EditProfileForm({
       <Field label="Email" hint="Private. Used for notifications only.">
         <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
       </Field>
+      <MobileInput value={mobile} onChange={setMobile} />
 
       {role === "creator" ? (
         <>

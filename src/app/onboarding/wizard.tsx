@@ -7,6 +7,7 @@ import { Alert, Button, Card } from "@/components/ui";
 import { Chips, Field, Input, ProgressBar, Select, Textarea } from "@/components/form";
 import { PortfolioEditor, PORTFOLIO_MIN } from "@/components/portfolio-editor";
 import { OtherContentInput, RatesEditor, pickRates } from "@/components/rates";
+import { MobileInput, cleanMobile } from "@/components/mobile-input";
 import { Logo } from "@/components/logo";
 import {
   BRAND_LOCATIONS,
@@ -29,7 +30,17 @@ const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
 const normHandle = (h: string) => h.trim().replace(/^@+/, "").toLowerCase();
 
-export function OnboardingWizard({ userId, defaultName, defaultEmail }: { userId: string; defaultName: string; defaultEmail: string }) {
+export function OnboardingWizard({
+  userId,
+  defaultName,
+  defaultEmail,
+  hasPhone,
+}: {
+  userId: string;
+  defaultName: string;
+  defaultEmail: string;
+  hasPhone: boolean;
+}) {
   const router = useRouter();
   const [role, setRole] = useState<Role | null>(null);
   const [step, setStep] = useState(1);
@@ -40,6 +51,7 @@ export function OnboardingWizard({ userId, defaultName, defaultEmail }: { userId
   // shared
   const [name, setName] = useState(defaultName);
   const [email, setEmail] = useState(defaultEmail);
+  const [mobile, setMobile] = useState("");
   const [handle, setHandle] = useState("");
   const [followers, setFollowers] = useState("");
   // creator
@@ -92,6 +104,7 @@ export function OnboardingWizard({ userId, defaultName, defaultEmail }: { userId
             p_rates: pickRates(rates, contentTypes),
             p_bio: bio.trim(),
             p_portfolio: portfolio,
+            p_phone: hasPhone ? undefined : (cleanMobile(mobile) ?? undefined),
           })
         : await supabase.rpc("complete_brand_onboarding", {
             p_name: name.trim(),
@@ -106,6 +119,7 @@ export function OnboardingWizard({ userId, defaultName, defaultEmail }: { userId
             p_audience_age_max: Number(ageMax),
             p_about: about.trim(),
             p_accept_terms: acceptTerms,
+            p_phone: hasPhone ? undefined : (cleanMobile(mobile) ?? undefined),
           });
     if (error) {
       setSaving(false);
@@ -192,6 +206,7 @@ export function OnboardingWizard({ userId, defaultName, defaultEmail }: { userId
             <Field label="Email" hint="For deal updates. Never shared with brands.">
               <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
             </Field>
+            {!hasPhone && <MobileInput value={mobile} onChange={setMobile} hint="Private. Never shown to brands. Align may call you about a deal." />}
             <Button
               onClick={() =>
                 next(() => {
@@ -202,6 +217,7 @@ export function OnboardingWizard({ userId, defaultName, defaultEmail }: { userId
                     return "";
                   }
                   if (email && !EMAIL_RE.test(email.trim())) return "That email doesn't look right.";
+                  if (!hasPhone && !cleanMobile(mobile)) return "Please enter a valid 10-digit mobile number.";
                   return null;
                 })
               }
@@ -298,6 +314,7 @@ export function OnboardingWizard({ userId, defaultName, defaultEmail }: { userId
             <Field label="Work email" hint="For deal updates. Never shared with creators.">
               <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@brand.com" />
             </Field>
+            {!hasPhone && <MobileInput value={mobile} onChange={setMobile} hint="Private. Never shown to creators. Align may call you about a deal." />}
             <label className="flex items-center gap-3 rounded-2xl bg-white p-4 ring-1 ring-inset ring-line">
               <input type="checkbox" className="size-5 accent-brand-600" checked={adult} onChange={(e) => setAdult(e.target.checked)} />
               <span className="text-sm font-medium">I confirm I am 18 or older</span>
@@ -307,6 +324,7 @@ export function OnboardingWizard({ userId, defaultName, defaultEmail }: { userId
                 next(() => {
                   if (!name.trim()) return "Please tell us your name.";
                   if (email && !EMAIL_RE.test(email.trim())) return "That email doesn't look right.";
+                  if (!hasPhone && !cleanMobile(mobile)) return "Please enter a valid 10-digit mobile number.";
                   if (!adult) return "Please confirm you are 18 or older. " + POLITE.underAge.replace(/^Align is only for people aged 18 and over\. /, "");
                   return null;
                 })
