@@ -113,6 +113,13 @@ export default function LoginPage() {
 
           {!sent && (
             <>
+              <p className="text-center text-xs text-muted">
+                By continuing, you agree to Align&apos;s{" "}
+                <a href="/privacy" className="font-semibold text-brand-700 underline">
+                  Privacy Policy
+                </a>
+                .
+              </p>
               <div className="flex items-center gap-3 py-2 text-xs font-semibold text-muted">
                 <span className="h-px flex-1 bg-line" />
                 OR

@@ -16,7 +16,10 @@ export const LEGAL = {
   company: "[Align's registered company name]",
   supportEmail: "[support email]",
   city: "[city]",
+  grievanceOfficer: "[Grievance Officer name]",
 };
+
+export const PRIVACY_VERSION = "2026-10-14";
 
 export type TermsSection = { title: string; points: string[] };
 
@@ -108,3 +111,80 @@ export function paymentPromise(opts: { creator: string; amount: string; barter: 
   const product = opts.both ? " and send the product" : "";
   return `I agree to pay ${opts.creator} ${opts.amount}${product} within ${PAYMENT_DAYS} days of the content going live, as per the Align Brand Terms.`;
 }
+
+// Align Privacy Policy. DRAFT, like the Brand Terms: plain English, to be
+// reviewed by a lawyer (India's DPDP Act 2023 and IT Rules) before launch.
+export const PRIVACY_POLICY: TermsSection[] = [
+  {
+    title: "1. Who we are",
+    points: [
+      `Align is run by ${LEGAL.company} ("Align", "we"). This policy explains what personal data we collect when you use Align, why, and the choices you have.`,
+    ],
+  },
+  {
+    title: "2. What we collect",
+    points: [
+      "Account details: your name, phone number, email address, and how you sign in (phone code or Google).",
+      "Profile details: for creators, age, Instagram handle, follower count, niche, city, content types, rates, bio and portfolio items. For brands: brand name, industry, Instagram handle, followers, location, target audience and description.",
+      "Activity on Align: campaigns, requests, offers and counter-offers, deals and their status, deal chat messages, ratings and reviews, and notifications.",
+      "Records of agreements: when a brand accepts the Brand Terms or agrees to pay for a deal, we save the date, time and terms version.",
+      "Basic technical data needed to keep you signed in and the service secure (such as login session cookies).",
+    ],
+  },
+  {
+    title: "3. Why we use it",
+    points: [
+      "To run Align: create your account, show your profile, match creators and brands, and manage deals.",
+      "To keep Align safe: block contact details in chat, prevent misuse, handle disputes and non-payment reports, and suspend accounts that break the rules.",
+      "To send you notifications about your requests and deals, in the app and (if you gave us your email) by email.",
+    ],
+  },
+  {
+    title: "4. What other users can see",
+    points: [
+      "Other users can see your public profile: name (or brand name), Instagram handle, followers, niche or industry, city or location, rates, portfolio, ratings and reviews.",
+      "Your phone number and email address are never shown to other users. The other side of a deal sees only what you share in the deal chat, which blocks contact details.",
+      "The Align team can see your contact details to support you and resolve disputes.",
+    ],
+  },
+  {
+    title: "5. Who we share it with",
+    points: [
+      "Service providers that run Align for us: hosting and database (Supabase, Vercel), sign-in (Google, if you use it), and SMS and email delivery providers. They process data only to provide their service to us.",
+      "If a brand does not pay, we may share deal records with the creator involved so they can recover the money.",
+      "If the law requires it, we may share data with authorities.",
+      "We do not sell your personal data.",
+    ],
+  },
+  {
+    title: "6. How long we keep it",
+    points: [
+      "We keep your data while your account is active. Deal records may be kept longer where needed to resolve disputes or meet legal obligations.",
+      "If you delete your account, we delete or anonymise your personal data unless we must keep it by law.",
+    ],
+  },
+  {
+    title: "7. Your rights",
+    points: [
+      "You can see and update most of your details from your profile.",
+      `You can ask us to access, correct or delete your personal data, or withdraw consent, by writing to ${LEGAL.supportEmail}.`,
+    ],
+  },
+  {
+    title: "8. Age",
+    points: ["Align is only for people aged 18 and over. We do not knowingly collect data from anyone under 18."],
+  },
+  {
+    title: "9. Security",
+    points: [
+      "Data is stored with access controls so each user can only see what they are allowed to. No system is perfectly secure, but we work to protect your data.",
+    ],
+  },
+  {
+    title: "10. Changes and contact",
+    points: [
+      "We may update this policy and will show the new version on this page.",
+      `Grievance Officer: ${LEGAL.grievanceOfficer}, ${LEGAL.supportEmail}.`,
+    ],
+  },
+];

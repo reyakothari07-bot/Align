@@ -48,6 +48,10 @@ export default async function Landing() {
           ))}
         </section>
       </main>
+      <footer className="mx-auto flex w-full max-w-5xl gap-5 px-4 pb-8 text-sm text-brand-100">
+        <a href="/privacy" className="hover:text-white">Privacy Policy</a>
+        <a href="/terms/brands" className="hover:text-white">Brand Terms</a>
+      </footer>
     </div>
   );
 }
