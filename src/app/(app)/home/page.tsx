@@ -15,7 +15,7 @@ export default async function HomePage({ searchParams }: PageProps<"/home">) {
   if (role === "brand") {
     let q = supabase.from("creator_cards").select("*");
     if (f("location")) q = q.eq("city", f("location")!);
-    if (f("category")) q = q.eq("niche", f("category")!);
+    if (f("category")) q = q.contains("niches", [f("category")!]);
     // Budget matches the creator's rate for the chosen content type, or any of their rates.
     if (f("type")) q = q.contains("content_types", [f("type") as ContentType]);
     if (f("type") && f("budget")) q = q.eq(`rates->>${f("type")}`, f("budget")!);

@@ -59,11 +59,14 @@ export function Chips<T extends string>({
   value,
   onChange,
   multiple,
+  max,
 }: {
   options: readonly (T | { value: T; label: string })[];
   value: T | T[] | null;
   onChange: (v: T | T[]) => void;
   multiple?: boolean;
+  /** Multi-select only: the most that can be picked at once. */
+  max?: number;
 }) {
   const selected = Array.isArray(value) ? value : value ? [value] : [];
   return (
@@ -71,11 +74,13 @@ export function Chips<T extends string>({
       {options.map((o) => {
         const opt = typeof o === "string" ? { value: o, label: o } : o;
         const on = selected.includes(opt.value);
+        const full = Boolean(multiple && max && !on && selected.length >= max);
         return (
           <button
             type="button"
             key={opt.value}
             aria-pressed={on}
+            disabled={full}
             onClick={() => {
               if (multiple) onChange(on ? selected.filter((s) => s !== opt.value) : [...selected, opt.value]);
               else onChange(opt.value);
@@ -83,6 +88,7 @@ export function Chips<T extends string>({
             className={cx(
               "min-h-11 rounded-full px-4 text-sm font-semibold ring-1 ring-inset transition",
               on ? "bg-brand-600 text-white ring-brand-600" : "bg-white text-ink ring-line hover:ring-brand-300",
+              full && "cursor-not-allowed opacity-40 hover:ring-line",
             )}
           >
             {opt.label}

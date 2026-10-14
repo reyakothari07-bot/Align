@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Alert, Button } from "@/components/ui";
 import { Chips, Field, Input, Select, Textarea } from "@/components/form";
 import { PortfolioEditor, PORTFOLIO_MIN } from "@/components/portfolio-editor";
-import { OtherContentInput, RatesEditor, pickRates } from "@/components/rates";
+import { OtherContentInput, OtherNicheInput, RatesEditor, pickRates } from "@/components/rates";
 import { MobileInput, cleanMobile } from "@/components/mobile-input";
 import type { Database } from "@/lib/database.types";
 import {
@@ -15,6 +15,7 @@ import {
   CONTENT_TYPES,
   CREATOR_MAX_FOLLOWERS,
   CREATOR_MIN_FOLLOWERS,
+  MAX_NICHES,
   NICHES,
   type ContentType,
   type Rates,
@@ -49,7 +50,8 @@ export function EditProfileForm({
   const [mobile, setMobile] = useState(initialPhone);
   const [followers, setFollowers] = useState(String(creator?.followers ?? brand?.followers ?? ""));
   // creator
-  const [niche, setNiche] = useState(creator?.niche ?? null);
+  const [niches, setNiches] = useState<string[]>(creator?.niches?.length ? creator.niches : creator?.niche ? [creator.niche] : []);
+  const [nicheOther, setNicheOther] = useState(creator?.niche_other ?? "");
   const [city, setCity] = useState(creator?.city ?? "");
   const [types, setTypes] = useState<ContentType[]>(creator?.content_types ?? []);
   const [otherContent, setOtherContent] = useState(creator?.other_content ?? "");
@@ -59,6 +61,7 @@ export function EditProfileForm({
   // brand
   const [brandName, setBrandName] = useState(brand?.brand_name ?? "");
   const [industry, setIndustry] = useState(brand?.industry ?? null);
+  const [industryOther, setIndustryOther] = useState(brand?.industry_other ?? "");
   const [location, setLocation] = useState(brand?.location ?? "");
   const [ageMin, setAgeMin] = useState(String(brand?.audience_age_min ?? 18));
   const [ageMax, setAgeMax] = useState(String(brand?.audience_age_max ?? 35));
@@ -77,10 +80,15 @@ export function EditProfileForm({
       const f = Number(followers);
       if (f < CREATOR_MIN_FOLLOWERS || f > CREATOR_MAX_FOLLOWERS) return setError("Align is for creators with 1K–12K followers.");
       if (portfolio.length < PORTFOLIO_MIN) return setError("Keep at least 3 portfolio items.");
+      if (!niches.length) return setError("Pick at least one niche.");
+      if (niches.includes("Other") && !nicheOther.trim()) return setError('Tell us your niche in the "Other" box.');
       if (!types.length) return setError("Pick at least one type of content you make.");
       if (types.includes("Other") && !otherContent.trim()) return setError('Tell brands what kind of "Other" content you make.');
       if (types.some((t) => !rates[t])) return setError("Please choose a rate for each type of content you make.");
-    } else if (Number(ageMin) > Number(ageMax)) return setError("The audience 'from' age should be lower than the 'to' age.");
+    } else {
+      if (Number(ageMin) > Number(ageMax)) return setError("The audience 'from' age should be lower than the 'to' age.");
+      if (industry === "Other" && !industryOther.trim()) return setError('Tell us your industry in the "Other" box.');
+    }
 
     setSaving(true);
     const supabase = createClient();
@@ -90,7 +98,13 @@ export function EditProfileForm({
       role === "creator"
         ? supabase
             .from("creator_profiles")
-            .update({ followers: Number(followers), niche: niche!, city, content_types: types,
+            .update({
+              followers: Number(followers),
+              niche: niches[0],
+              niches,
+              niche_other: niches.includes("Other") ? nicheOther.trim() : null,
+              city,
+              content_types: types,
               other_content: types.includes("Other") ? otherContent.trim() : null,
               rates: pickRates(rates, types),
               bio: bio.trim() || null,
@@ -102,6 +116,7 @@ export function EditProfileForm({
             .update({
               brand_name: brandName.trim(),
               industry: industry!,
+              industry_other: industry === "Other" ? industryOther.trim() : null,
               followers: Number(followers || 0),
               location,
               audience_age_min: Number(ageMin),
@@ -140,9 +155,10 @@ export function EditProfileForm({
           <Field label="Followers">
             <Input inputMode="numeric" value={followers} onChange={(e) => setFollowers(e.target.value.replace(/\D/g, ""))} />
           </Field>
-          <Field label="Niche">
-            <Chips options={NICHES} value={niche} onChange={(v) => setNiche(v as string)} />
+          <Field label="Your niches" hint={`Pick up to ${MAX_NICHES}. The first one is your main niche.`}>
+            <Chips options={NICHES} value={niches} onChange={(v) => setNiches(v as string[])} multiple max={MAX_NICHES} />
           </Field>
+          {niches.includes("Other") && <OtherNicheInput value={nicheOther} onChange={setNicheOther} />}
           <Field label="City">
             <Select value={city} onChange={(e) => setCity(e.target.value)} options={CITIES} />
           </Field>
@@ -168,6 +184,7 @@ export function EditProfileForm({
           <Field label="Industry">
             <Chips options={NICHES} value={industry} onChange={(v) => setIndustry(v as string)} />
           </Field>
+          {industry === "Other" && <OtherNicheInput value={industryOther} onChange={setIndustryOther} label="Your industry" />}
           <Field label="Followers">
             <Input inputMode="numeric" value={followers} onChange={(e) => setFollowers(e.target.value.replace(/\D/g, ""))} />
           </Field>

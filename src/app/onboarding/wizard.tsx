@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Alert, Button, Card } from "@/components/ui";
 import { Chips, Field, Input, ProgressBar, Select, Textarea } from "@/components/form";
 import { PortfolioEditor, PORTFOLIO_MIN } from "@/components/portfolio-editor";
-import { OtherContentInput, RatesEditor, pickRates } from "@/components/rates";
+import { OtherContentInput, OtherNicheInput, RatesEditor, pickRates } from "@/components/rates";
 import { MobileInput, cleanMobile } from "@/components/mobile-input";
 import { Logo } from "@/components/logo";
 import {
@@ -17,6 +17,7 @@ import {
   CREATOR_MIN_FOLLOWERS,
   MIN_AGE,
   NICHES,
+  MAX_NICHES,
   POLITE,
   type ContentType,
   type Rates,
@@ -56,7 +57,8 @@ export function OnboardingWizard({
   const [followers, setFollowers] = useState("");
   // creator
   const [age, setAge] = useState("");
-  const [niche, setNiche] = useState<string | null>(null);
+  const [niches, setNiches] = useState<string[]>([]);
+  const [nicheOther, setNicheOther] = useState("");
   const [city, setCity] = useState("");
   const [contentTypes, setContentTypes] = useState<ContentType[]>([]);
   const [otherContent, setOtherContent] = useState("");
@@ -67,6 +69,7 @@ export function OnboardingWizard({
   const [adult, setAdult] = useState(false);
   const [brandName, setBrandName] = useState("");
   const [industry, setIndustry] = useState<string | null>(null);
+  const [industryOther, setIndustryOther] = useState("");
   const [location, setLocation] = useState("");
   const [ageMin, setAgeMin] = useState("18");
   const [ageMax, setAgeMax] = useState("35");
@@ -97,7 +100,9 @@ export function OnboardingWizard({
             p_age: Number(age),
             p_ig_handle: normHandle(handle),
             p_followers: Number(followers),
-            p_niche: niche!,
+            p_niche: niches[0],
+            p_niches: niches,
+            p_niche_other: niches.includes("Other") ? nicheOther.trim() : undefined,
             p_city: city,
             p_content_types: contentTypes,
             p_other_content: contentTypes.includes("Other") ? otherContent.trim() : "",
@@ -112,6 +117,7 @@ export function OnboardingWizard({
             p_confirm_adult: adult,
             p_brand_name: brandName.trim(),
             p_industry: industry!,
+            p_industry_other: industry === "Other" ? industryOther.trim() : undefined,
             p_ig_handle: normHandle(handle),
             p_followers: Number(followers || 0),
             p_location: location,
@@ -261,9 +267,10 @@ export function OnboardingWizard({
         {role === "creator" && step === 4 && (
           <>
             <Heading title="Your content" sub="Helps brands find you." />
-            <Field label="Niche">
-              <Chips options={NICHES} value={niche} onChange={(v) => setNiche(v as string)} />
+            <Field label="Your niches" hint={`Pick up to ${MAX_NICHES}. The first one is your main niche.`}>
+              <Chips options={NICHES} value={niches} onChange={(v) => setNiches(v as string[])} multiple max={MAX_NICHES} />
             </Field>
+            {niches.includes("Other") && <OtherNicheInput value={nicheOther} onChange={setNicheOther} />}
             <Field label="City">
               <Select value={city} onChange={(e) => setCity(e.target.value)} options={CITIES} placeholder="Select your city" />
             </Field>
@@ -280,7 +287,8 @@ export function OnboardingWizard({
             <Button
               onClick={() =>
                 next(() => {
-                  if (!niche) return "Please pick your niche.";
+                  if (!niches.length) return "Please pick at least one niche.";
+                  if (niches.includes("Other") && !nicheOther.trim()) return 'Tell us your niche in the "Other" box.';
                   if (!city) return "Please select your city.";
                   if (!contentTypes.length) return "Pick at least one type of content you make.";
                   if (contentTypes.includes("Other") && !otherContent.trim()) return "Tell us what kind of \"Other\" content you make.";
@@ -344,6 +352,7 @@ export function OnboardingWizard({
             <Field label="Industry">
               <Chips options={NICHES} value={industry} onChange={(v) => setIndustry(v as string)} />
             </Field>
+            {industry === "Other" && <OtherNicheInput value={industryOther} onChange={setIndustryOther} label="Your industry" />}
             <Field label="Brand Instagram handle">
               <div className="flex">
                 <span className="flex h-12 items-center rounded-l-2xl bg-brand-50 px-4 font-semibold text-brand-700 ring-1 ring-inset ring-line">@</span>
@@ -361,6 +370,7 @@ export function OnboardingWizard({
                 next(() => {
                   if (!brandName.trim()) return "Please add your brand name.";
                   if (!industry) return "Please pick your industry.";
+                  if (industry === "Other" && !industryOther.trim()) return 'Tell us your industry in the "Other" box.';
                   if (!HANDLE_RE.test(normHandle(handle))) return "Please enter a valid Instagram handle (letters, numbers, . and _).";
                   if (!location) return "Please select your location.";
                   return null;

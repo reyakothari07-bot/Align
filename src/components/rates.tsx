@@ -4,12 +4,29 @@ import { Field, Input, Select } from "@/components/form";
 import { BUDGET_BUCKETS, OTHER_MAX, contentLabel, type ContentType, type Rates } from "@/lib/constants";
 
 /** Text box that appears when "Other" is picked as a content type. */
-export function OtherContentInput({ value, onChange, label = "What kind of content?" }: { value: string; onChange: (v: string) => void; label?: string }) {
+export function OtherContentInput({
+  value,
+  onChange,
+  label = "What kind of content?",
+  placeholder = "Describe the content",
+  examples = "Podcast clip, YouTube Short",
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  label?: string;
+  placeholder?: string;
+  examples?: string;
+}) {
   return (
-    <Field label={label} hint={`${value.length}/${OTHER_MAX} · e.g. Podcast clip, YouTube Short`}>
-      <Input value={value} maxLength={OTHER_MAX} onChange={(e) => onChange(e.target.value)} placeholder="Describe the content" autoFocus />
+    <Field label={label} hint={`${value.length}/${OTHER_MAX} · e.g. ${examples}`}>
+      <Input value={value} maxLength={OTHER_MAX} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} autoFocus />
     </Field>
   );
+}
+
+/** "Other" box for a niche or industry. */
+export function OtherNicheInput({ value, onChange, label = "Your niche" }: { value: string; onChange: (v: string) => void; label?: string }) {
+  return <OtherContentInput value={value} onChange={onChange} label={label} placeholder="Type it here" examples="Sustainable living, Automobiles" />;
 }
 
 /** One rate per selected content type. */

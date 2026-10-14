@@ -1,7 +1,7 @@
 -- Run with: npm run test:db   (needs the seed loaded; everything rolls back)
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(76);
+select plan(81);
 
 
 create or replace function pg_temp.act_as(p_user uuid) returns void language plpgsql as $$
@@ -231,6 +231,25 @@ select throws_ok($$select complete_brand_onboarding('Google User', null, true, '
 select lives_ok($$select complete_brand_onboarding('Google User', null, true, 'G Brand', 'Beauty', 'g.brand.test', 100, 'Mumbai', 18, 30, null, true, '+91 98765-43210')$$,
   'a Google sign-up with a valid mobile number can finish setup');
 select is((select phone from user_private where user_id = auth.uid()), '919876543210', 'the mobile number is stored privately in a standard format');
+
+-- Niches: up to 3, main niche first, "Other" needs a description.
+select pg_temp.act_as_admin();
+insert into auth.users (instance_id, id, aud, role, phone)
+values ('00000000-0000-0000-0000-000000000000', 'aaaaaaaa-0000-4000-8000-000000000005', 'authenticated', 'authenticated', '919100000098');
+select pg_temp.act_as('aaaaaaaa-0000-4000-8000-000000000005');
+select throws_ok($$select complete_creator_onboarding('N', null, 25, 'niche.test', 5000, 'Fashion', 'Pune', '{Reel}', null, '{"Reel":"₹2K–3K"}', null, '{a,b,c}', null,
+                   array['Fashion','Beauty','Travel','Food'], null)$$,
+  'P0001', 'Please pick up to 3 niches.', 'a creator cannot pick more than 3 niches');
+select throws_ok($$select complete_creator_onboarding('N', null, 25, 'niche.test', 5000, 'Fashion', 'Pune', '{Reel}', null, '{"Reel":"₹2K–3K"}', null, '{a,b,c}', null,
+                   array['Fashion','Other'], null)$$,
+  'P0001', null, '"Other" niche needs a description');
+select lives_ok($$select complete_creator_onboarding('N', null, 25, 'niche.test', 5000, 'Fashion', 'Pune', '{Reel}', null, '{"Reel":"₹2K–3K"}', null, '{a,b,c}', null,
+                   array['Fashion','Other'], 'Sustainable living')$$,
+  'a creator can pick several niches including "Other" with a description');
+select is((select niche || '|' || array_to_string(niches, ',') || '|' || niche_other from creator_profiles where user_id = auth.uid()),
+  'Fashion|Fashion,Other|Sustainable living', 'main niche, full list and the "Other" text are saved');
+select is((select count(*)::int from creator_cards where user_id = auth.uid() and niches @> array['Other']), 1,
+  'the niche filter finds a creator by any of their niches, not just the main one');
 
 -- =====================================================================
 -- 6. Brand Terms: brands must accept the terms and agree to pay on every commitment

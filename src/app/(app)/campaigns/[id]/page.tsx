@@ -7,7 +7,7 @@ import { CampaignStatusToggle } from "../mine/status-toggle";
 import { ApplyForm } from "./apply-form";
 import { PaymentReportWarning } from "@/components/payment-warning";
 import { formatDate, inr, todayISO } from "@/lib/format";
-import { contentLabel } from "@/lib/constants";
+import { categoryLabel, contentLabel } from "@/lib/constants";
 
 export default async function CampaignPage({ params }: PageProps<"/campaigns/[id]">) {
   const { id } = await params;
@@ -33,7 +33,7 @@ export default async function CampaignPage({ params }: PageProps<"/campaigns/[id
           <div className="min-w-0 flex-1">
             <p className="font-bold">{c.brand_name}</p>
             <p className="text-sm text-muted">
-              {c.industry} · {c.location}
+              {categoryLabel(c.industry, c.industry_other)} · {c.location}
             </p>
           </div>
           <Stars value={Number(c.brand_avg_stars)} count={c.brand_review_count ?? 0} />
@@ -46,7 +46,7 @@ export default async function CampaignPage({ params }: PageProps<"/campaigns/[id
         <div className="flex flex-wrap gap-1.5">
           <Badge tone={open ? "green" : "gray"}>{open ? "Open" : "Closed"}</Badge>
           <Badge>{contentLabel(c.content_type, c.content_other)}</Badge>
-          <Badge tone="gray">{c.niche}</Badge>
+          <Badge tone="gray">{categoryLabel(c.niche, c.niche_other)}</Badge>
         </div>
         <dl className="mt-5 grid grid-cols-2 gap-4">
           <Detail label="Compensation">{compLabel(c.comp_type)}</Detail>

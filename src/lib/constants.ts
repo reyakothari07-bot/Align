@@ -129,3 +129,17 @@ export function ratesList(rates: unknown, other?: string | null) {
   const r = (rates && typeof rates === "object" ? rates : {}) as Rates;
   return CONTENT_TYPES.filter((t) => r[t]).map((t) => ({ type: t, label: contentLabel(t, other), bucket: r[t]! }));
 }
+
+export const MAX_NICHES = 3;
+
+/** "Other" shows the typed text; anything else shows as-is. Works for niches and industries. */
+export function categoryLabel(value: string | null | undefined, other?: string | null) {
+  if (value === "Other" && other?.trim()) return other.trim();
+  return value ?? "";
+}
+
+/** A creator's niches as display labels, main niche first. */
+export function nicheLabels(niches: string[] | null | undefined, other?: string | null, fallback?: string | null) {
+  const list = niches?.length ? niches : fallback ? [fallback] : [];
+  return list.map((n) => categoryLabel(n, other));
+}

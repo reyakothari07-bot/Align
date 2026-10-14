@@ -5,6 +5,7 @@ import { CampaignCard } from "@/components/cards";
 import { ReviewList } from "@/components/reviews";
 import { PaymentReportWarning } from "@/components/payment-warning";
 import { compactFollowers, todayISO } from "@/lib/format";
+import { categoryLabel } from "@/lib/constants";
 
 export default async function BrandProfilePage({ params }: PageProps<"/brands/[id]">) {
   const { id } = await params;
@@ -30,7 +31,7 @@ export default async function BrandProfilePage({ params }: PageProps<"/brands/[i
       <PaymentReportWarning count={b.open_payment_reports} brand={b.brand_name!} />
       <Card className="p-5">
         <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <Detail label="Industry">{b.industry}</Detail>
+          <Detail label="Industry">{categoryLabel(b.industry, b.industry_other)}</Detail>
           <Detail label="Location">{b.location}</Detail>
           <Detail label="Followers">{compactFollowers(b.followers!)}</Detail>
           <Detail label="Audience">

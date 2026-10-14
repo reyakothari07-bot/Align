@@ -61,10 +61,17 @@ begin
     update public.users set role = 'creator', name = r.name
      where id = ('11111111-0000-4000-8000-0000000000' || lpad(r.n::text, 2, '0'))::uuid;
     insert into public.creator_profiles
-      (user_id, age, ig_handle, followers, niche, city, content_types, rates, other_content, bio, portfolio)
+      (user_id, age, ig_handle, followers, niche, niches, city, content_types, rates, other_content, bio, portfolio)
     values (
       ('11111111-0000-4000-8000-0000000000' || lpad(r.n::text, 2, '0'))::uuid,
-      r.age, r.handle, r.followers, r.niche, r.city, r.types, r.rates, r.other, r.bio,
+      r.age, r.handle, r.followers, r.niche,
+      case r.handle
+        when 'aanya.styles' then array['Fashion', 'Lifestyle']
+        when 'priyaglows' then array['Beauty', 'Lifestyle']
+        when 'rohan.eats' then array['Food', 'Travel']
+        when 'meera.wanders' then array['Travel', 'Lifestyle']
+        else array[r.niche] end,
+      r.city, r.types, r.rates, r.other, r.bio,
       array[
         'https://picsum.photos/seed/' || r.handle || '-1/600/750.jpg',
         'https://picsum.photos/seed/' || r.handle || '-2/600/750.jpg',

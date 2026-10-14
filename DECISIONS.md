@@ -18,8 +18,13 @@ These are choices made where the handoff spec was silent or ambiguous. In each c
 - **Email is collected during profile setup** for phone sign-ups, because notification emails need it. It's optional, and prefilled for Google sign-ups.
 - **Phone numbers default to India (+91).**
 
+## Niches
+- **Creators pick up to 3 niches** (changed on 2026-10-14; previously one). The first one is stored as their main `niche`, and all of them are in `niches`.
+- **The brand-side niche filter matches any of a creator's niches.**
+- **"Other" needs a short description** wherever it appears: creator niches, brand industry and campaign niche. The description is up to 40 characters, with contact details blocked, the same as for content types.
+
 ## Feed and filters
-- **One category list** (Fashion, Beauty, Food, …) serves creator niche, brand industry and campaign niche.
+- **One category list** (Fashion, Beauty, Food, …) serves creator niches, brand industry and campaign niche.
 - **Creator-side "Industry" filter** matches the campaign brand's industry, as the spec says.
 - **Creator-side "Location" filter** also shows Pan-India brands, since they work with creators anywhere.
 - **Brand-side budget filter** matches the creator's rate for the chosen content type. With no content type picked, it matches any of their rates.

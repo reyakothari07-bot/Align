@@ -36,6 +36,7 @@ export type Database = {
     Tables: {
       brand_profiles: {
         Row: {
+          industry_other: string | null
           terms_accepted_at: string | null
           terms_version: string | null
           about: string | null
@@ -50,6 +51,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          industry_other?: string | null
           terms_accepted_at?: string | null
           terms_version?: string | null
           about?: string | null
@@ -64,6 +66,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          industry_other?: string | null
           terms_accepted_at?: string | null
           terms_version?: string | null
           about?: string | null
@@ -89,6 +92,7 @@ export type Database = {
       }
       campaigns: {
         Row: {
+          niche_other: string | null
           brand_id: string
           brief: string | null
           budget_bucket: Database["public"]["Enums"]["budget_bucket"]
@@ -105,6 +109,7 @@ export type Database = {
           title: string
         }
         Insert: {
+          niche_other?: string | null
           brand_id: string
           brief?: string | null
           budget_bucket: Database["public"]["Enums"]["budget_bucket"]
@@ -121,6 +126,7 @@ export type Database = {
           title: string
         }
         Update: {
+          niche_other?: string | null
           brand_id?: string
           brief?: string | null
           budget_bucket?: Database["public"]["Enums"]["budget_bucket"]
@@ -155,6 +161,8 @@ export type Database = {
       }
       creator_profiles: {
         Row: {
+          niche_other: string | null
+          niches: string[]
           followers_checked_at: string | null
           age: number
           bio: string | null
@@ -170,6 +178,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          niche_other?: string | null
+          niches?: string[]
           followers_checked_at?: string | null
           age: number
           bio?: string | null
@@ -185,6 +195,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          niche_other?: string | null
+          niches?: string[]
           followers_checked_at?: string | null
           age?: number
           bio?: string | null
@@ -694,6 +706,7 @@ export type Database = {
     Views: {
       brand_cards: {
         Row: {
+          industry_other: string | null
           open_payment_reports: number | null
           about: string | null
           audience_age_max: number | null
@@ -721,6 +734,8 @@ export type Database = {
       }
       campaign_cards: {
         Row: {
+          industry_other: string | null
+          niche_other: string | null
           brand_open_payment_reports: number | null
           brand_avg_stars: number | null
           brand_id: string | null
@@ -762,6 +777,8 @@ export type Database = {
       }
       creator_cards: {
         Row: {
+          niche_other: string | null
+          niches: string[] | null
           age: number | null
           avg_stars: number | null
           bio: string | null
@@ -1027,6 +1044,7 @@ export type Database = {
           p_name: string
           p_accept_terms: boolean
           p_phone?: string
+          p_industry_other?: string
         }
         Returns: undefined
       }
@@ -1045,6 +1063,8 @@ export type Database = {
           p_portfolio: string[]
           p_rates: Json
           p_phone?: string
+          p_niche_other?: string
+          p_niches?: string[]
         }
         Returns: undefined
       }

@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Database } from "@/lib/database.types";
 import { Avatar, Badge, Card, Stars } from "@/components/ui";
 import { PortfolioTile } from "@/components/portfolio";
-import { COMP_TYPES, contentLabel, ratesList } from "@/lib/constants";
+import { COMP_TYPES, categoryLabel, contentLabel, nicheLabels, ratesList } from "@/lib/constants";
 import { compactFollowers, daysUntil, formatDate } from "@/lib/format";
 
 type CampaignCardRow = Database["public"]["Views"]["campaign_cards"]["Row"];
@@ -31,7 +31,7 @@ export function CampaignCard({ c, applied }: { c: CampaignCardRow; applied?: boo
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold">{c.brand_name}</p>
             <p className="truncate text-xs text-muted">
-              {c.industry} · {c.location}
+              {categoryLabel(c.industry, c.industry_other)} · {c.location}
             </p>
           </div>
           {applied ? (
@@ -47,7 +47,7 @@ export function CampaignCard({ c, applied }: { c: CampaignCardRow; applied?: boo
           <Badge>{contentLabel(c.content_type, c.content_other)}</Badge>
           <Badge tone={c.comp_type === "barter" ? "amber" : "green"}>{c.budget_bucket}</Badge>
           {c.comp_type === "both" && <Badge tone="blue">+ product</Badge>}
-          <Badge tone="gray">{c.niche}</Badge>
+          <Badge tone="gray">{categoryLabel(c.niche, c.niche_other)}</Badge>
         </div>
         <div className="mt-4 flex justify-between border-t border-line pt-3 text-xs font-medium text-muted">
           <span>{deadlineLabel(c.deadline!)}</span>
@@ -81,7 +81,13 @@ export function CreatorCard({ c }: { c: CreatorCardRow }) {
           </div>
           <div className="mt-3 flex flex-wrap gap-1.5">
             <Badge>{compactFollowers(c.followers ?? 0)} followers</Badge>
-            <Badge tone="gray">{c.niche}</Badge>
+            {nicheLabels(c.niches, c.niche_other, c.niche)
+              .slice(0, 2)
+              .map((n) => (
+                <Badge key={n} tone="gray">
+                  {n}
+                </Badge>
+              ))}
             <Badge tone="gray">{c.city}</Badge>
           </div>
           <div className="mt-2 flex flex-wrap gap-1.5">

@@ -5,6 +5,7 @@ import { ReviewList } from "@/components/reviews";
 import { SignOutButton } from "./sign-out";
 import { RatesTable } from "@/components/rates-table";
 import { compactFollowers } from "@/lib/format";
+import { categoryLabel, nicheLabels } from "@/lib/constants";
 
 export default async function MyProfilePage({ searchParams }: PageProps<"/profile">) {
   const saved = (await searchParams).saved === "1";
@@ -38,7 +39,7 @@ export default async function MyProfilePage({ searchParams }: PageProps<"/profil
           <>
             <dl className="grid grid-cols-3 gap-4">
               <Detail label="Followers">{compactFollowers(creator.followers!)}</Detail>
-              <Detail label="Niche">{creator.niche}</Detail>
+              <Detail label="Niches">{nicheLabels(creator.niches, creator.niche_other, creator.niche).join(", ")}</Detail>
               <Detail label="City">{creator.city}</Detail>
             </dl>
             <div className="mt-4 border-t border-line pt-3">
@@ -50,7 +51,7 @@ export default async function MyProfilePage({ searchParams }: PageProps<"/profil
         {brand && (
           <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <Detail label="Contact">{name}</Detail>
-            <Detail label="Industry">{brand.industry}</Detail>
+            <Detail label="Industry">{categoryLabel(brand.industry, brand.industry_other)}</Detail>
             <Detail label="Location">{brand.location}</Detail>
             <Detail label="Audience">
               {brand.audience_age_min}–{brand.audience_age_max} yrs

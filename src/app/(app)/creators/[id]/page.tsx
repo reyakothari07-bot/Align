@@ -5,6 +5,7 @@ import { PortfolioGrid } from "@/components/portfolio";
 import { ReviewList } from "@/components/reviews";
 import { RatesTable } from "@/components/rates-table";
 import { compactFollowers } from "@/lib/format";
+import { nicheLabels } from "@/lib/constants";
 
 export default async function CreatorProfilePage({ params }: PageProps<"/creators/[id]">) {
   const { id } = await params;
@@ -28,7 +29,7 @@ export default async function CreatorProfilePage({ params }: PageProps<"/creator
       <Card className="p-5">
         <dl className="grid grid-cols-3 gap-4">
           <Detail label="Followers">{compactFollowers(c.followers!)}</Detail>
-          <Detail label="Niche">{c.niche}</Detail>
+          <Detail label="Niches">{nicheLabels(c.niches, c.niche_other, c.niche).join(", ")}</Detail>
           <Detail label="City">{c.city}</Detail>
         </dl>
         <div className="mt-4 border-t border-line pt-3">

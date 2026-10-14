@@ -7,7 +7,7 @@ import { Alert, Button, ButtonLink } from "@/components/ui";
 import { Chips, Field, Input, Select, Textarea } from "@/components/form";
 import { BUDGET_BUCKETS, COMP_TYPES, CONTENT_TYPES, NICHES, type BudgetBucket, type CompType, type ContentType } from "@/lib/constants";
 import { errorMessage, todayISO } from "@/lib/format";
-import { OtherContentInput } from "@/components/rates";
+import { OtherContentInput, OtherNicheInput } from "@/components/rates";
 
 export function CampaignForm({ brandId, first }: { brandId: string; first: boolean }) {
   const router = useRouter();
@@ -18,6 +18,7 @@ export function CampaignForm({ brandId, first }: { brandId: string; first: boole
   const [budget, setBudget] = useState<BudgetBucket | "">("");
   const [deadline, setDeadline] = useState("");
   const [niche, setNiche] = useState<string | null>(null);
+  const [nicheOther, setNicheOther] = useState("");
   const [slots, setSlots] = useState(1);
   const [brief, setBrief] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -32,6 +33,7 @@ export function CampaignForm({ brandId, first }: { brandId: string; first: boole
     if (comp !== "barter" && !budget) return setError("Pick a budget range.");
     if (!deadline) return setError("Pick a deadline.");
     if (!niche) return setError("Pick the niche you want.");
+    if (niche === "Other" && !nicheOther.trim()) return setError('Tell creators the niche in the "Other" box.');
     setSaving(true);
     setError(null);
     const { error } = await createClient()
@@ -46,6 +48,7 @@ export function CampaignForm({ brandId, first }: { brandId: string; first: boole
         budget_bucket: comp === "barter" ? "Barter" : (budget as BudgetBucket),
         deadline,
         niche,
+        niche_other: niche === "Other" ? nicheOther.trim() : null,
         slots,
       });
     if (error) {
@@ -82,6 +85,7 @@ export function CampaignForm({ brandId, first }: { brandId: string; first: boole
       <Field label="Niche you want">
         <Chips options={NICHES} value={niche} onChange={(v) => setNiche(v as string)} />
       </Field>
+      {niche === "Other" && <OtherNicheInput value={nicheOther} onChange={setNicheOther} label="Which niche?" />}
       <Field label="Number of creators">
         <div className="flex items-center gap-3">
           <Button type="button" variant="secondary" size="md" className="size-12 !px-0 text-xl" onClick={() => setSlots((s) => Math.max(1, s - 1))} aria-label="Fewer">
