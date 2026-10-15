@@ -76,6 +76,11 @@ These are choices made where the handoff spec was silent or ambiguous. In each c
 - **Mobile:** bottom tab bar and full-width big buttons, with one main action per screen. **Desktop:** top navigation, and the Deal Card sits side by side with the chat.
 - **Portfolio items** can be uploaded photos or videos (Supabase Storage bucket `portfolio`, public read, each user writes only to their own folder) or pasted post links.
 
+## Live vs demo data (2026-10-15)
+- **All demo accounts and their data moved to a separate Supabase project** (Tokyo, the client's second free project), so the live site only holds real sign-ups. Row counts were verified table by table before anything was deleted from live.
+- **Live has phone login switched off**, so the `123456` test codes no longer work there. The demo project has them on.
+- **`npm run dev` uses the demo project** (`.env.development.local`); production builds use the live project.
+
 ## Infrastructure
 - **No local Supabase or Docker.** Development runs against the hosted project to save disk space. DB tests run through a small Node runner (`npm run test:db`) instead of `supabase test db`.
 - **Next.js 16 renamed `middleware.ts` to `proxy.ts`.** It refreshes the session and redirects signed-out users.

@@ -8,6 +8,15 @@ There's no local database. Development and production both use a hosted Supabase
 
 ---
 
+## Two Supabase projects
+
+| Project | Used by | Data |
+|---|---|---|
+| **Live**: `zvvgpaivqmmlhgzfrnib` (Mumbai) | the live site on Vercel (`.env.local`, Vercel env vars) | real users only. Google sign-in; phone login is off. |
+| **Demo**: `tyxlfwbiqayrrpujaknv` (Tokyo) | local development (`npm run dev` reads `.env.development.local`) | all the demo accounts. Phone test login with code `123456`. |
+
+Demo auth settings live in `demo/supabase/config.toml` (`supabase config push --workdir demo`). To copy data between projects, see `scripts/export-data.mjs`. A full backup of the live data from before the demo accounts were moved is kept outside the repo in `../backups/`.
+
 ## Setup
 
 ### 1. Create the Supabase project
@@ -174,7 +183,7 @@ select u.name, c.ig_handle, c.followers, c.created_at from creator_profiles c jo
 select * from deal_cards where status = 'disputed';
 ```
 
-**Remove test accounts** (and everything they created) by phone number. It shows what it would delete unless you add `--yes`:
+**Remove test accounts** (and everything they created) by phone number. Runs against whichever database `DATABASE_URL` points to. It shows what it would delete unless you add `--yes`:
 
 ```bash
 node --env-file=.env.local scripts/delete-test-users.mjs 919100000001 919100000002
